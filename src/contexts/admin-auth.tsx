@@ -5,8 +5,9 @@ import React, { useReducer } from "react";
 type AdminAuthProviderProps = { children: React.ReactNode };
 
 type AdminAuth = {
-  username: string | null;
-  password: string | null;
+  host: string | undefined;
+  username: string | undefined;
+  password: string | undefined;
 };
 
 type Action = {
@@ -26,7 +27,7 @@ function reducer(state: AdminAuth, action: Action): AdminAuth {
     case "set":
       return action?.payload;
     case "reset":
-      return { username: null, password: null };
+      return { host: undefined, username: undefined, password: undefined };
     default:
       return state;
   }
@@ -35,7 +36,8 @@ function reducer(state: AdminAuth, action: Action): AdminAuth {
 export default function AdminAuthProvider({
   children,
 }: AdminAuthProviderProps) {
-  const initialState = { username: null, password: null };
+  const url = process.env.PDS_HOST;
+  const initialState = { host: url, username: undefined, password: undefined };
   const [data, dispatchData] = useReducer(reducer, initialState);
 
   return (

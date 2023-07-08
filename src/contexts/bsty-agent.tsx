@@ -17,20 +17,28 @@ function setBskyAgent(url: string | undefined): BskyAgent {
 
 export const BskyAgentContext = React.createContext(
   {} as {
-    agent: BskyAgent;
+    agent: AgentWithHost;
     dispatchAgent: React.Dispatch<Action>;
   }
 );
+
+type AgentWithHost = {
+  host: string | undefined;
+  agent: BskyAgent;
+};
 
 type Action = {
   type: "set";
   payload: string;
 };
 
-function reducer(state: BskyAgent, action: Action): BskyAgent {
+function reducer(state: AgentWithHost, action: Action): AgentWithHost {
   switch (action?.type) {
     case "set":
-      return setBskyAgent(action?.payload);
+      return {
+        host: action?.payload,
+        agent: setBskyAgent(action?.payload),
+      };
     default:
       throw state;
   }
@@ -40,7 +48,10 @@ export default function BskyAgentContextProvider({
   children,
 }: BskyAgentProviderProps) {
   const url = process.env.PDS_HOST;
-  const initialState = setBskyAgent(url);
+  const initialState = {
+    host: url,
+    agent: setBskyAgent(url),
+  };
   const [agent, dispatchAgent] = useReducer(reducer, initialState);
 
   return (
