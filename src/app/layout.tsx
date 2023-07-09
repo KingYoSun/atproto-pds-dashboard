@@ -37,7 +37,9 @@ export default function RootLayout({
                 <AdminAuthModal />
                 <main className="flex flex-row flex-nowrap">
                   <Drawer items={navItems} className="flex-none" />
-                  <div className="grow">{children}</div>
+                  <div className="grow margin-sidebar px-5 py-5">
+                    {children}
+                  </div>
                 </main>
               </>
             </AlertMsgProvider>
