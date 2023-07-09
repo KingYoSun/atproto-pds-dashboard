@@ -5,6 +5,7 @@ import BskyAgentContextProvider from "@/contexts/bsty-agent";
 import AdminAuthModal from "@/components/functional/admin-auth-modal";
 import { Drawer } from "@/components/ui/drawer";
 import { Mailbox } from "lucide-react";
+import AlertMsgProvider from "@/contexts/alert-msg";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,13 +32,15 @@ export default function RootLayout({
       <body className={inter.className}>
         <BskyAgentContextProvider>
           <AdminAuthProvider>
-            <>
-              <AdminAuthModal />
-              <main className="flex flex-row flex-nowrap">
-                <Drawer items={navItems} className="flex-none" />
-                <div className="grow">{children}</div>
-              </main>
-            </>
+            <AlertMsgProvider>
+              <>
+                <AdminAuthModal />
+                <main className="flex flex-row flex-nowrap">
+                  <Drawer items={navItems} className="flex-none" />
+                  <div className="grow">{children}</div>
+                </main>
+              </>
+            </AlertMsgProvider>
           </AdminAuthProvider>
         </BskyAgentContextProvider>
       </body>
