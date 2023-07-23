@@ -49,7 +49,6 @@ export default function AdminAuthModal() {
         { headers: { Authorization: `Basic ${encoded}` } }
       )
       .then((res) => {
-        console.log(res);
         setErrTxt("");
         setDialogOpen(!res.success);
       })

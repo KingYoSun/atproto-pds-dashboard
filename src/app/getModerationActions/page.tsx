@@ -1,15 +1,10 @@
 "use client";
 
-import ModerationReport from "@/components/moderation/report";
 import { Button } from "@/components/ui/button";
 import { AdminAuthContext } from "@/contexts/admin-auth";
 import { AlertMsgContext } from "@/contexts/alert-msg";
 import { BskyAgentContext } from "@/contexts/bsty-agent";
-import { isReportView } from "@/lib/utils";
-import {
-  ActionView,
-  ReportView,
-} from "@atproto/api/dist/client/types/com/atproto/admin/defs";
+import { ComAtprotoServerResetPassword } from "@atproto/api";
 import {
   useCallback,
   useContext,
@@ -45,15 +40,17 @@ export default function Home() {
   const { data, dispatchData } = useContext(AdminAuthContext);
   const { agent, dispatchAgent } = useContext(BskyAgentContext);
   const { alert, dispatchAlert } = useContext(AlertMsgContext);
-  const [reports, setReports] = useState<ReportView[]>([]);
+  //const [reports, setReports] = useState<ReportView[]>([]);
   const [cursorArr, dispatchCursorArr] = useReducer(cursorReducer, [undefined]);
   const [cursorArrIndex, setCursorArrIndex] = useState<number>(0);
+  const [openModal, setOpenModal] = useState<boolean>(false);
 
-  const getReports = useCallback(
+  const getActions = useCallback(
     (encoded: string, direction: PageDirection) => {
       const index = direction == "prev" ? cursorArrIndex - 2 : cursorArrIndex;
+      console.log("index", index);
       agent.agent.api.com.atproto.admin
-        .getModerationReports(
+        .getModerationActions(
           {
             limit: PAGINATION_COUNT,
             cursor: cursorArr[index],
@@ -66,7 +63,8 @@ export default function Home() {
             type: "close",
             payload: undefined,
           });
-          setReports(res.data.reports);
+          console.log(res);
+          // setReports(res.data.reports);
           if (
             direction != "prev" &&
             !!res.data.cursor &&
@@ -106,28 +104,15 @@ export default function Home() {
     });
     setCursorArrIndex(0);
     const encoded = btoa(`${data.username}:${data.password}`);
-    getReports(encoded, "next");
+    getActions(encoded, "next");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
-
-  function updateReport(report: ActionView) {
-    const updateReports = reports.map((item) => {
-      if (item.id == report.id) {
-        const asserted = Object.keys(item).map((key) => report[key]);
-        if (isReportView(asserted)) return asserted;
-      }
-      return item;
-    });
-    setReports(updateReports);
-  }
 
   return (
     <div className="flex flex-col">
       <div className="flex flex-col items-center justify-start">
-        {reports.map((report) => (
-          <div key={report.id} className="my-2 w-full">
-            <ModerationReport report={report} updateReport={updateReport} />
-          </div>
+        {[].map((report, index) => (
+          <div key={index} className="my-2 w-full"></div>
         ))}
       </div>
       <div className="flex flex-row flex-nowrap items-center justify-center mt-5">
@@ -136,7 +121,7 @@ export default function Home() {
             className="mx-2"
             variant="outline"
             onClick={() =>
-              getReports(btoa(`${data.username}:${data.password}`), "prev")
+              getActions(btoa(`${data.username}:${data.password}`), "prev")
             }
           >
             Prev
@@ -147,7 +132,7 @@ export default function Home() {
             className="mx-2"
             variant="outline"
             onClick={() =>
-              getReports(btoa(`${data.username}:${data.password}`), "next")
+              getActions(btoa(`${data.username}:${data.password}`), "next")
             }
           >
             Next

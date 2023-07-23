@@ -4,7 +4,7 @@ import { Inter } from "next/font/google";
 import BskyAgentContextProvider from "@/contexts/bsty-agent";
 import AdminAuthModal from "@/components/functional/admin-auth-modal";
 import { Drawer } from "@/components/ui/drawer";
-import { Mailbox } from "lucide-react";
+import { Mailbox, Stamp } from "lucide-react";
 import AlertMsgProvider from "@/contexts/alert-msg";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -24,6 +24,11 @@ export default function RootLayout({
       icon: <Mailbox />,
       text: "getModarationReports",
       path: "/",
+    },
+    {
+      icon: <Stamp />,
+      text: "getModerationActions",
+      path: "/getModerationActions",
     },
   ];
 

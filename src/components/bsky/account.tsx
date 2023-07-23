@@ -13,6 +13,7 @@ import {
 import { Button } from "../ui/button";
 import dayjs from "dayjs";
 import { Separator } from "../ui/separator";
+import Labels from "@/components/bsky/labels";
 
 interface Props {
   did: string;
@@ -67,20 +68,28 @@ export default function Account({ did }: Props) {
         </Button>
       </HoverCardTrigger>
       <HoverCardContent align="start" className="w-80 bg-white">
-        <h4 className="text-sm font-semibold">{account?.handle}</h4>
-        <p className="text-sm">{account?.did}</p>
-        <p className="text-sm">{account?.email}</p>
-        <p className="text-sm">labels: {account?.labels?.join(", ")}</p>
-        <p className="text-sm">invitedBy: {account?.invitedBy?.forAccount}</p>
-        <p className="text-sm">invites: {account?.invites?.join("\n")}</p>
-        <p className="text-sm">
-          inviteDisabled?: {String(account?.invitesDisabled)}
-        </p>
-        <Separator className="my-1" />
-        <p className="text-sm">
-          indextedAt:{" "}
-          {dayjs(account?.indexedAt).format("YYYY-MM-DD HH:mm:ss Z")}
-        </p>
+        <div>
+          <p className="text-sm font-semibold">{account?.handle}</p>
+          <p className="text-sm">{account?.did}</p>
+          <p className="text-sm">{account?.email}</p>
+          <p className="text-sm">labels:</p>
+          {!!account?.labels && account.labels.length > 0 && (
+            <Labels labels={account.labels} />
+          )}
+          <p className="text-sm">invitedBy: {account?.invitedBy?.forAccount}</p>
+          <p className="text-sm">
+            invites:{" "}
+            {account?.invites?.map((item) => item.forAccount).join("\n")}
+          </p>
+          <p className="text-sm">
+            inviteDisabled?: {String(account?.invitesDisabled)}
+          </p>
+          <Separator className="my-1" />
+          <p className="text-sm">
+            indextedAt:{" "}
+            {dayjs(account?.indexedAt).format("YYYY-MM-DD HH:mm:ss Z")}
+          </p>
+        </div>
       </HoverCardContent>
     </HoverCard>
   );
