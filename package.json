@@ -29,7 +29,7 @@
     "eslint-config-next": "13.4.9",
     "lucide-react": "^0.262.0",
     "next": "13.4.9",
-    "postcss": "8.4.26",
+    "postcss": "8.4.27",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.45.1",
