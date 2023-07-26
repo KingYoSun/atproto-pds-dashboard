@@ -1,3 +1,4 @@
+import { AtpSessionData } from "@atproto/api";
 import Cookies from "js-cookie";
 
 interface adminAuthProps {
@@ -22,4 +23,18 @@ export function getAdminAuth(): adminAuthProps {
 
 export function revokeAdminAuth() {
   Cookies.remove("authParams");
+}
+
+interface plcAuthProps {
+  host: string;
+  sessionData: AtpSessionData;
+}
+
+export function setPlcAuth({ host, sessionData }: plcAuthProps) {
+  Cookies.set(`auth:${host}`, JSON.stringify(sessionData), { expires: 7 });
+}
+
+export function getPlcAuth(host: string): AtpSessionData {
+  const valuesJSON = Cookies.get(`auth:${host}`);
+  return typeof valuesJSON == "string" ? JSON.parse(valuesJSON) : undefined;
 }

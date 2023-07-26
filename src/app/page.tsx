@@ -4,7 +4,7 @@ import ModerationReport from "@/components/moderation/report";
 import { Button } from "@/components/ui/button";
 import { AdminAuthContext } from "@/contexts/admin-auth";
 import { AlertMsgContext } from "@/contexts/alert-msg";
-import { BskyAgentContext } from "@/contexts/bsty-agent";
+import { AdminBskyAgentContext } from "@/contexts/admin-bsky-agent";
 import { isReportView } from "@/lib/utils";
 import {
   ActionView,
@@ -43,7 +43,7 @@ function cursorReducer(
 
 export default function Home() {
   const { data, dispatchData } = useContext(AdminAuthContext);
-  const { agent, dispatchAgent } = useContext(BskyAgentContext);
+  const { adminAgent, dispatchAdminAgent } = useContext(AdminBskyAgentContext);
   const { alert, dispatchAlert } = useContext(AlertMsgContext);
   const [reports, setReports] = useState<ReportView[]>([]);
   const [cursorArr, dispatchCursorArr] = useReducer(cursorReducer, [undefined]);
@@ -52,7 +52,7 @@ export default function Home() {
   const getReports = useCallback(
     (encoded: string, direction: PageDirection) => {
       const index = direction == "prev" ? cursorArrIndex - 2 : cursorArrIndex;
-      agent.agent.api.com.atproto.admin
+      adminAgent.agent.api.com.atproto.admin
         .getModerationReports(
           {
             limit: PAGINATION_COUNT,
@@ -92,7 +92,7 @@ export default function Home() {
         });
     },
     [
-      agent.agent.api.com.atproto.admin,
+      adminAgent.agent.api.com.atproto.admin,
       cursorArr,
       cursorArrIndex,
       dispatchAlert,

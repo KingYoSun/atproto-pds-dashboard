@@ -2,7 +2,7 @@
 
 import { AdminAuthContext } from "@/contexts/admin-auth";
 import { AlertMsgContext } from "@/contexts/alert-msg";
-import { BskyAgentContext } from "@/contexts/bsty-agent";
+import { AdminBskyAgentContext } from "@/contexts/admin-bsky-agent";
 import { RepoViewDetail } from "@atproto/api/dist/client/types/com/atproto/admin/defs";
 import { useContext, useEffect, useState } from "react";
 import {
@@ -21,18 +21,18 @@ interface Props {
 
 export default function Account({ did }: Props) {
   const { data, dispatchData } = useContext(AdminAuthContext);
-  const { agent, dispatchAgent } = useContext(BskyAgentContext);
+  const { adminAgent, dispatchAdminAgent } = useContext(AdminBskyAgentContext);
   const { alert, dispatchAlert } = useContext(AlertMsgContext);
   const [account, setAccount] = useState<RepoViewDetail | undefined>(undefined);
 
   useEffect(() => {
-    const encoded = btoa(`${data.username}:${data.password}`);
-    getRepo(encoded);
+    getRepoAdmin();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data]);
+  }, []);
 
-  function getRepo(encoded: string) {
-    agent.agent.api.com.atproto.admin
+  function getRepoAdmin() {
+    const encoded = btoa(`${data.username}:${data.password}`);
+    adminAgent.agent.api.com.atproto.admin
       .getRepo(
         {
           did: did,

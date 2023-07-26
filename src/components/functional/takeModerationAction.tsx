@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { AdminAuthContext } from "@/contexts/admin-auth";
 import { AlertMsgContext } from "@/contexts/alert-msg";
-import { BskyAgentContext } from "@/contexts/bsty-agent";
+import { AdminBskyAgentContext } from "@/contexts/admin-bsky-agent";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { InputSchema } from "@atproto/api/dist/client/types/com/atproto/admin/takeModerationAction";
 import * as z from "zod";
@@ -60,7 +60,7 @@ export default function TakeModerationAction({
   open,
 }: Props) {
   const { data, dispatchData } = useContext(AdminAuthContext);
-  const { agent, dispatchAgent } = useContext(BskyAgentContext);
+  const { adminAgent, dispatchAdminAgent } = useContext(AdminBskyAgentContext);
   const { alert, dispatchAlert } = useContext(AlertMsgContext);
   const [post, setPost] = useState<RecordViewDetail | undefined>(undefined);
   const [isFlag, setIsFlag] = useState<boolean>(false);
@@ -115,7 +115,7 @@ export default function TakeModerationAction({
   const getPost = useCallback(() => {
     const encoded = btoa(`${data.username}:${data.password}`);
 
-    agent.agent.api.com.atproto.admin
+    adminAgent.agent.api.com.atproto.admin
       .getRecord(
         {
           uri: String(report.subject.uri),
@@ -131,7 +131,7 @@ export default function TakeModerationAction({
         setErrTxt(JSON.stringify(res));
       });
   }, [
-    agent.agent.api.com.atproto.admin,
+    adminAgent.agent.api.com.atproto.admin,
     data.password,
     data.username,
     report.subject.cid,

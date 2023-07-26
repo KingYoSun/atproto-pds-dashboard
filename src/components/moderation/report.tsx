@@ -22,7 +22,7 @@ import { useContext, useState } from "react";
 import TakeModerationAction from "@/components/functional/takeModerationAction";
 import { AdminAuthContext } from "@/contexts/admin-auth";
 import { AlertMsgContext } from "@/contexts/alert-msg";
-import { BskyAgentContext } from "@/contexts/bsty-agent";
+import { AdminBskyAgentContext } from "@/contexts/admin-bsky-agent";
 
 interface Props {
   report: ReportView;
@@ -31,14 +31,14 @@ interface Props {
 
 export default function ModerationReport({ report, updateReport }: Props) {
   const { data, dispatchData } = useContext(AdminAuthContext);
-  const { agent, dispatchAgent } = useContext(BskyAgentContext);
+  const { adminAgent, dispatchAdminAgent } = useContext(AdminBskyAgentContext);
   const [modReport, setModReport] = useState<ReportView | undefined>(undefined);
   const [openActionModal, setOpenActionModal] = useState<boolean>(false);
 
   function takeModerationAction(props: InputSchema) {
     const encoded = btoa(`${data.username}:${data.password}`);
     console.log(props);
-    agent.agent.api.com.atproto.admin
+    adminAgent.agent.api.com.atproto.admin
       .takeModerationAction(props, {
         headers: { Authorization: `Basic ${encoded}` },
         encoding: "application/json",

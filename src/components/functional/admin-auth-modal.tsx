@@ -22,7 +22,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { BskyAgentContext } from "@/contexts/bsty-agent";
+import { AdminBskyAgentContext } from "@/contexts/admin-bsky-agent";
 import { getAdminAuth, setAdminAuth } from "@/lib/cookies";
 
 const formSchema = z.object({
@@ -33,13 +33,13 @@ const formSchema = z.object({
 
 export default function AdminAuthModal() {
   const { data, dispatchData } = useContext(AdminAuthContext);
-  const { agent, dispatchAgent } = useContext(BskyAgentContext);
+  const { adminAgent, dispatchAdminAgent } = useContext(AdminBskyAgentContext);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [errTxt, setErrTxt] = useState("");
 
   const checkAuth = useCallback(() => {
     const encoded = btoa(`${data.username}:${data.password}`);
-    agent.agent.api.com.atproto.admin
+    adminAgent.agent.api.com.atproto.admin
       .getModerationReports(
         {},
         { headers: { Authorization: `Basic ${encoded}` } }
@@ -51,6 +51,10 @@ export default function AdminAuthModal() {
           username: data.username as string,
           password: data.password as string,
         });
+        dispatchAdminAgent({
+          type: "set",
+          payload: { host: data.host },
+        });
         setDialogOpen(!res.success);
       })
       .catch((res) => {
@@ -58,10 +62,11 @@ export default function AdminAuthModal() {
         setDialogOpen(true);
       });
   }, [
-    agent.agent.api.com.atproto.admin,
+    adminAgent.agent.api.com.atproto.admin,
     data.host,
     data.password,
     data.username,
+    dispatchAdminAgent,
   ]);
 
   useEffect(() => {
@@ -98,10 +103,10 @@ export default function AdminAuthModal() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    if (values.host !== agent.host) {
-      dispatchAgent({
+    if (values.host !== adminAgent.host) {
+      dispatchAdminAgent({
         type: "set",
-        payload: values.host,
+        payload: { host: values.host },
       });
     }
     dispatchData({

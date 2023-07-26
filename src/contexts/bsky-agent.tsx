@@ -2,6 +2,7 @@
 
 import { BskyAgent, AtpSessionEvent, AtpSessionData } from "@atproto/api";
 import React, { useReducer } from "react";
+import { OutputSchema } from "@atproto/api/dist/client/types/com/atproto/server/createSession";
 
 type BskyAgentProviderProps = { children: React.ReactNode };
 
@@ -25,19 +26,49 @@ export const BskyAgentContext = React.createContext(
 type AgentWithHost = {
   host: string | undefined;
   agent: BskyAgent;
+  isLogin: boolean;
+  session: OutputSchema | AtpSessionData | undefined;
+};
+
+type Payload = {
+  host?: string;
+  session?: OutputSchema | AtpSessionData | undefined;
 };
 
 type Action = {
-  type: "set";
-  payload: string;
+  type: "set" | "logout" | "login" | "session";
+  payload: Payload;
 };
 
 function reducer(state: AgentWithHost, action: Action): AgentWithHost {
   switch (action?.type) {
     case "set":
       return {
-        host: action?.payload,
-        agent: setBskyAgent(action?.payload),
+        host: action?.payload.host,
+        agent: setBskyAgent(action?.payload.host),
+        isLogin: false,
+        session: state.session,
+      };
+    case "logout":
+      return {
+        host: state.host,
+        agent: state.agent,
+        isLogin: false,
+        session: state.session,
+      };
+    case "login":
+      return {
+        host: state.host,
+        agent: state.agent,
+        isLogin: true,
+        session: state.session,
+      };
+    case "session":
+      return {
+        host: state.host,
+        agent: state.agent,
+        isLogin: false,
+        session: action?.payload.session,
       };
     default:
       throw state;
@@ -51,6 +82,8 @@ export default function BskyAgentContextProvider({
   const initialState = {
     host: url,
     agent: setBskyAgent(url),
+    isLogin: false,
+    session: undefined,
   };
   const [agent, dispatchAgent] = useReducer(reducer, initialState);
 

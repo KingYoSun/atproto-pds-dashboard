@@ -6,6 +6,7 @@ import Link from "next/link";
 import { AdminAuthContext } from "@/contexts/admin-auth";
 import { Button } from "./button";
 import { revokeAdminAuth } from "@/lib/cookies";
+import { BskyAgentContext } from "@/contexts/bsky-agent";
 
 export type DrawerItem = {
   icon: JSX.Element;
@@ -20,12 +21,21 @@ export interface DrawerPorps extends React.HTMLAttributes<HTMLDivElement> {
 const Drawer = React.forwardRef<HTMLDivElement, DrawerPorps>(
   ({ className, items, tabIndex, ...props }, ref) => {
     const { data, dispatchData } = React.useContext(AdminAuthContext);
+    const { agent, dispatchAgent } = React.useContext(BskyAgentContext);
+
     function resetAdminAuth() {
       dispatchData({
         type: "reset",
         payload: { host: undefined, username: undefined, password: undefined },
       });
       revokeAdminAuth();
+    }
+
+    function resetPlcAuth() {
+      dispatchAgent({
+        type: "login",
+        payload: {},
+      });
     }
 
     return (
@@ -41,14 +51,21 @@ const Drawer = React.forwardRef<HTMLDivElement, DrawerPorps>(
         {...props}
       >
         <div className="flex flex-row flex-nowrap items-center justify-between">
-          <h5
-            id="drawer-navigation-label"
-            className="text-base font-semibold text-gray-500 uppercase dark:text-gray-400"
+          <Button
+            variant="outline"
+            size="default"
+            onClick={resetPlcAuth}
+            className="text-xs"
           >
-            Menu
-          </h5>
-          <Button variant="outline" size="sm" onClick={resetAdminAuth}>
-            Logout
+            PLC {!!agent.session ? "Logout" : "Login"}
+          </Button>
+          <Button
+            variant="outline"
+            size="default"
+            onClick={resetAdminAuth}
+            className="text-xs"
+          >
+            Admin Logout
           </Button>
         </div>
         <div className="py-4 overflow-y-auto">

@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { AdminAuthContext } from "@/contexts/admin-auth";
 import { AlertMsgContext } from "@/contexts/alert-msg";
-import { BskyAgentContext } from "@/contexts/bsty-agent";
+import { BskyAgentContext } from "@/contexts/bsky-agent";
 import { ComAtprotoServerResetPassword } from "@atproto/api";
 import {
   useCallback,

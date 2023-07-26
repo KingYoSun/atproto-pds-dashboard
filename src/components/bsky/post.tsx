@@ -2,7 +2,8 @@
 
 import { AdminAuthContext } from "@/contexts/admin-auth";
 import { AlertMsgContext } from "@/contexts/alert-msg";
-import { BskyAgentContext } from "@/contexts/bsty-agent";
+import { BskyAgentContext } from "@/contexts/bsky-agent";
+import { AdminBskyAgentContext } from "@/contexts/admin-bsky-agent";
 import { RecordViewDetail } from "@atproto/api/dist/client/types/com/atproto/admin/defs";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { Record } from "@atproto/api/dist/client/types/app/bsky/feed/post";
@@ -10,7 +11,6 @@ import dayjs from "dayjs";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardDescriptionDiv,
   CardHeader,
 } from "@/components/ui/card";
@@ -26,45 +26,44 @@ interface Props {
 export default function Post({ cid, uri, subjectRepoHandle }: Props) {
   const { data, dispatchData } = useContext(AdminAuthContext);
   const { agent, dispatchAgent } = useContext(BskyAgentContext);
+  const { adminAgent, dispatchAdminAgent } = useContext(AdminBskyAgentContext);
   const { alert, dispatchAlert } = useContext(AlertMsgContext);
   const [post, setPost] = useState<RecordViewDetail | undefined>(undefined);
 
-  const getPost = useCallback(
-    (encoded: string) => {
-      agent.agent.api.com.atproto.admin
-        .getRecord(
-          {
-            uri: uri,
-            cid: cid,
-          },
-          { headers: { Authorization: `Basic ${encoded}` } }
-        )
-        .then((res) => {
-          dispatchAlert({
-            type: "close",
-            payload: undefined,
-          });
-          setPost(res.data);
-        })
-        .catch((res) => {
-          dispatchAlert({
-            type: "set",
-            payload: {
-              variant: "destructive",
-              title: "getPosts Failed!",
-              message: JSON.stringify(res),
-              open: true,
-            },
-          });
+  function getPostByAdmin() {
+    const encoded = btoa(`${data.username}:${data.password}`);
+    adminAgent.agent.api.com.atproto.admin
+      .getRecord(
+        {
+          uri: uri,
+          cid: cid,
+        },
+        { headers: { Authorization: `Basic ${encoded}` } }
+      )
+      .then((res) => {
+        dispatchAlert({
+          type: "close",
+          payload: undefined,
         });
-    },
-    [agent.agent.api.com.atproto.admin, cid, dispatchAlert, uri]
-  );
+        setPost(res.data);
+      })
+      .catch((res) => {
+        dispatchAlert({
+          type: "set",
+          payload: {
+            variant: "destructive",
+            title: "getPosts Failed!",
+            message: JSON.stringify(res),
+            open: true,
+          },
+        });
+      });
+  }
 
   useEffect(() => {
-    const encoded = btoa(`${data.username}:${data.password}`);
-    getPost(encoded);
-  }, [data, getPost]);
+    getPostByAdmin();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function parseValue(value: {} | undefined) {
     if (!value) return undefined;
