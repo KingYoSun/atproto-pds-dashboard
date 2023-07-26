@@ -81,7 +81,11 @@ export default function AdminAuthModal() {
   }, [dispatchData]);
 
   useEffect(() => {
-    checkAuth();
+    if (!!data.password && !!data.username) {
+      checkAuth();
+    } else {
+      setDialogOpen(true);
+    }
   }, [checkAuth, data.password, data.username]);
 
   const form = useForm<z.infer<typeof formSchema>>({
