@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { AdminAuthContext } from "@/contexts/admin-auth";
 import { Button } from "./button";
+import { revokeAdminAuth } from "@/lib/cookies";
 
 export type DrawerItem = {
   icon: JSX.Element;
@@ -24,6 +25,7 @@ const Drawer = React.forwardRef<HTMLDivElement, DrawerPorps>(
         type: "reset",
         payload: { host: undefined, username: undefined, password: undefined },
       });
+      revokeAdminAuth();
     }
 
     return (

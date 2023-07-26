@@ -18,11 +18,12 @@ import {
 import { AdminAuthContext } from "@/contexts/admin-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { BskyAgentContext } from "@/contexts/bsty-agent";
+import { getAdminAuth, setAdminAuth } from "@/lib/cookies";
 
 const formSchema = z.object({
   host: z.string().url(),
@@ -36,12 +37,7 @@ export default function AdminAuthModal() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [errTxt, setErrTxt] = useState("");
 
-  useEffect(() => {
-    if (!data.password || !data.username) {
-      setDialogOpen(true);
-      return;
-    }
-
+  const checkAuth = useCallback(() => {
     const encoded = btoa(`${data.username}:${data.password}`);
     agent.agent.api.com.atproto.admin
       .getModerationReports(
@@ -50,12 +46,43 @@ export default function AdminAuthModal() {
       )
       .then((res) => {
         setErrTxt("");
+        setAdminAuth({
+          host: data.host as string,
+          username: data.username as string,
+          password: data.password as string,
+        });
         setDialogOpen(!res.success);
       })
       .catch((res) => {
         setErrTxt(JSON.stringify(res));
+        setDialogOpen(true);
       });
-  }, [agent.agent.api.com.atproto.admin, data.password, data.username]);
+  }, [
+    agent.agent.api.com.atproto.admin,
+    data.host,
+    data.password,
+    data.username,
+  ]);
+
+  useEffect(() => {
+    const authParams = getAdminAuth();
+    if (!!authParams) {
+      dispatchData({
+        type: "set",
+        payload: {
+          host: authParams.host,
+          username: authParams.username,
+          password: authParams.password,
+        },
+      });
+
+      return;
+    }
+  }, [dispatchData]);
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth, data.password, data.username]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
