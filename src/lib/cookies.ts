@@ -38,3 +38,7 @@ export function getPlcAuth(host: string): AtpSessionData {
   const valuesJSON = Cookies.get(`auth:${host}`);
   return typeof valuesJSON == "string" ? JSON.parse(valuesJSON) : undefined;
 }
+
+export function revokePlcAuth(host: string) {
+  Cookies.remove(`auth:${host}`);
+}

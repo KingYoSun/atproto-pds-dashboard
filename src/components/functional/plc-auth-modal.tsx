@@ -21,8 +21,7 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { BskyAgentContext } from "@/contexts/bsky-agent";
-import { data } from "autoprefixer";
-import { getPlcAuth, setPlcAuth } from "@/lib/cookies";
+import { getPlcAuth, revokePlcAuth, setPlcAuth } from "@/lib/cookies";
 
 const formSchema = z.object({
   username: z.string(),
@@ -67,7 +66,6 @@ export default function PlcAuthModal() {
 
   useEffect(() => {
     if (!agent.isLogin && !!agent.host) {
-      console.log("session?");
       const sessionExist = getPlcAuth(agent.host);
       if (sessionExist) {
         agent.agent
@@ -83,6 +81,7 @@ export default function PlcAuthModal() {
               type: "session",
               payload: { session: undefined },
             });
+            revokePlcAuth(agent.host as string);
           });
       }
     }

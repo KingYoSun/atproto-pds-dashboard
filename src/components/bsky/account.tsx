@@ -14,12 +14,16 @@ import { Button } from "../ui/button";
 import dayjs from "dayjs";
 import { Separator } from "../ui/separator";
 import Labels from "@/components/bsky/labels";
+import { ProfileViewBasic } from "@atproto/api/dist/client/types/app/bsky/actor/defs";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { User } from "lucide-react";
 
 interface Props {
   did: string;
+  author?: ProfileViewBasic;
 }
 
-export default function Account({ did }: Props) {
+export default function Account({ did, author }: Props) {
   const { data, dispatchData } = useContext(AdminAuthContext);
   const { adminAgent, dispatchAdminAgent } = useContext(AdminBskyAgentContext);
   const { alert, dispatchAlert } = useContext(AlertMsgContext);
@@ -40,7 +44,6 @@ export default function Account({ did }: Props) {
         { headers: { Authorization: `Basic ${encoded}` } }
       )
       .then((res) => {
-        console.log(res);
         dispatchAlert({
           type: "close",
           payload: undefined,
@@ -62,11 +65,24 @@ export default function Account({ did }: Props) {
 
   return (
     <HoverCard>
-      <HoverCardTrigger asChild>
-        <Button variant="link" size="sm">
-          @{account?.handle}
-        </Button>
-      </HoverCardTrigger>
+      <div className="flex flex-row justify-start">
+        <Avatar>
+          <AvatarImage src={author?.avatar} />
+          <AvatarFallback>
+            <User />
+          </AvatarFallback>
+        </Avatar>
+        <HoverCardTrigger asChild>
+          <div className="flex flex-col mx-1 justify-center">
+            <p className="text-black font-semibold hover:underline">
+              {author?.displayName}
+            </p>
+            <p className="text-black font-normal hover:underline">
+              @{account?.handle}
+            </p>
+          </div>
+        </HoverCardTrigger>
+      </div>
       <HoverCardContent align="start" className="w-80 bg-white">
         <div>
           <p className="text-sm font-semibold">{account?.handle}</p>

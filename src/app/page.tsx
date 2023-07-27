@@ -61,11 +61,11 @@ export default function Home() {
           { headers: { Authorization: `Basic ${encoded}` } }
         )
         .then((res) => {
-          console.log(res);
           dispatchAlert({
             type: "close",
             payload: undefined,
           });
+          console.log(res);
           setReports(res.data.reports);
           if (
             direction != "prev" &&
@@ -100,6 +100,7 @@ export default function Home() {
   );
 
   useEffect(() => {
+    if (!data.username || !data.password) return;
     dispatchCursorArr({
       type: "reset",
       payload: "",

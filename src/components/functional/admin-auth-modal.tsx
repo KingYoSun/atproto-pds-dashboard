@@ -24,6 +24,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { AdminBskyAgentContext } from "@/contexts/admin-bsky-agent";
 import { getAdminAuth, setAdminAuth } from "@/lib/cookies";
+import { BskyAgentContext } from "@/contexts/bsky-agent";
 
 const formSchema = z.object({
   host: z.string().url(),
@@ -34,10 +35,12 @@ const formSchema = z.object({
 export default function AdminAuthModal() {
   const { data, dispatchData } = useContext(AdminAuthContext);
   const { adminAgent, dispatchAdminAgent } = useContext(AdminBskyAgentContext);
+  const { agent, dispatchAgent } = useContext(BskyAgentContext);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [errTxt, setErrTxt] = useState("");
 
   const checkAuth = useCallback(() => {
+    if (!data.username || !data.password) return;
     const encoded = btoa(`${data.username}:${data.password}`);
     adminAgent.agent.api.com.atproto.admin
       .getModerationReports(
@@ -51,10 +54,6 @@ export default function AdminAuthModal() {
           username: data.username as string,
           password: data.password as string,
         });
-        dispatchAdminAgent({
-          type: "set",
-          payload: { host: data.host },
-        });
         setDialogOpen(!res.success);
       })
       .catch((res) => {
@@ -66,7 +65,6 @@ export default function AdminAuthModal() {
     data.host,
     data.password,
     data.username,
-    dispatchAdminAgent,
   ]);
 
   useEffect(() => {
@@ -80,10 +78,17 @@ export default function AdminAuthModal() {
           password: authParams.password,
         },
       });
-
+      dispatchAdminAgent({
+        type: "set",
+        payload: { host: data.host },
+      });
+      dispatchAgent({
+        type: "set",
+        payload: { host: data.host },
+      });
       return;
     }
-  }, [dispatchData]);
+  }, [data.host, dispatchAdminAgent, dispatchAgent, dispatchData]);
 
   useEffect(() => {
     if (!!data.password && !!data.username) {

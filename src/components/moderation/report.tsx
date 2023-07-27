@@ -37,7 +37,6 @@ export default function ModerationReport({ report, updateReport }: Props) {
 
   function takeModerationAction(props: InputSchema) {
     const encoded = btoa(`${data.username}:${data.password}`);
-    console.log(props);
     adminAgent.agent.api.com.atproto.admin
       .takeModerationAction(props, {
         headers: { Authorization: `Basic ${encoded}` },
@@ -58,51 +57,59 @@ export default function ModerationReport({ report, updateReport }: Props) {
   }
 
   function closeModerationActionModal() {
-    console.log("close!");
     setOpenActionModal(false);
   }
 
   return (
-    <>
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>{report.reasonType}</CardTitle>
-          <CardDescription>id: {report.id}</CardDescription>
-          <CardDescriptionDiv>
-            Reported by: <Account did={report.reportedBy} />
-          </CardDescriptionDiv>
-          <CardDescription>Resson: {report.reason}</CardDescription>
-          <CardDescription>
-            created_at:{" "}
-            {dayjs(report.createdAt).format("YYYY-MM-DD HH:mm:ss Z")}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Post
-            cid={report.subject.cid as string}
-            uri={report.subject.uri as string}
-            subjectRepoHandle={report.subjectRepoHandle}
+    !!report && (
+      <>
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>{report.reasonType}</CardTitle>
+            <CardDescription>id: {report.id}</CardDescription>
+            <CardDescriptionDiv className="flex flex-row items-center">
+              Reported by:
+              <div className="mx-1" />
+              <Account did={report.reportedBy} />
+            </CardDescriptionDiv>
+            <CardDescription>Reason: {report.reason}</CardDescription>
+            <CardDescription>
+              created_at:{" "}
+              {dayjs(report.createdAt).format("YYYY-MM-DD HH:mm:ss Z")}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {report.subject.$type == "com.atproto.admin.defs#repoRef" && (
+              <Account did={report.subject.did as string} />
+            )}
+            {report.subject.$type == "com.atproto.repo.strongRef" && (
+              <Post
+                cid={report.subject.cid as string}
+                uri={report.subject.uri as string}
+                subjectRepoHandle={report.subjectRepoHandle}
+              />
+            )}
+          </CardContent>
+          <CardFooter>
+            <div className="flex flex-row">
+              <Button
+                variant="secondary"
+                onClick={() => openModerationActionModal(report)}
+              >
+                takeModerationAction
+              </Button>
+            </div>
+          </CardFooter>
+        </Card>
+        {!!modReport && (
+          <TakeModerationAction
+            report={modReport}
+            open={openActionModal}
+            takeModerationActionFunc={takeModerationAction}
+            closeModalFunc={() => closeModerationActionModal()}
           />
-        </CardContent>
-        <CardFooter>
-          <div className="flex flex-row">
-            <Button
-              variant="secondary"
-              onClick={() => openModerationActionModal(report)}
-            >
-              takeModerationAction
-            </Button>
-          </div>
-        </CardFooter>
-      </Card>
-      {!!modReport && (
-        <TakeModerationAction
-          report={modReport}
-          open={openActionModal}
-          takeModerationActionFunc={takeModerationAction}
-          closeModalFunc={() => closeModerationActionModal()}
-        />
-      )}
-    </>
+        )}
+      </>
+    )
   );
 }
