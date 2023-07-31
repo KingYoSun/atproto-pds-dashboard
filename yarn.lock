@@ -12,10 +12,10 @@
   resolved "https://registry.yarnpkg.com/@alloc/quick-lru/-/quick-lru-5.2.0.tgz#7bf68b20c0a350f936915fcae06f58e32007ce30"
   integrity sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==
 
-"@atproto/api@^0.4.0":
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/@atproto/api/-/api-0.4.0.tgz#f3aa63e2d85ceeb2a50a3f35fc09c202ea27ea17"
-  integrity sha512-F/PHkoVeXIBHcdvk8iF+IbeJptEidRHNGeYIUE8c7GCdNDLinrTRFWGfYZci95VFv+6YmhGr0BPAJWGl+AQdKw==
+"@atproto/api@^0.4.3":
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/@atproto/api/-/api-0.4.3.tgz#d7e478bf7009df2adaf1ac6051eb3e3fea185c90"
+  integrity sha512-8LdREwmoA58YQDrLS0rohd7cHokhoiXfyYEeNtNlkdO0w/2QpkUCQ1PgPBP2kIRM9PhOEkKp7W3Sn8Te9Qq8jg==
   dependencies:
     "@atproto/common-web" "*"
     "@atproto/uri" "*"
