@@ -7,7 +7,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { AdminAuthContext } from "@/contexts/admin-auth";
-import { AlertMsgContext } from "@/contexts/alert-msg";
 import { AdminBskyAgentContext } from "@/contexts/admin-bsky-agent";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { InputSchema } from "@atproto/api/dist/client/types/com/atproto/admin/takeModerationAction";
@@ -36,6 +35,7 @@ import { RecordViewDetail } from "@atproto/api/dist/client/types/com/atproto/adm
 import { Badge } from "@/components/ui/badge";
 import AddLabelBtn from "./add-label-btn";
 import Labels from "@/components/bsky/labels";
+import { BskyAgentContext } from "@/contexts/bsky-agent";
 
 const formSchema = z.object({
   action: z.string(),
@@ -61,7 +61,7 @@ export default function TakeModerationAction({
 }: Props) {
   const { data, dispatchData } = useContext(AdminAuthContext);
   const { adminAgent, dispatchAdminAgent } = useContext(AdminBskyAgentContext);
-  const { alert, dispatchAlert } = useContext(AlertMsgContext);
+  const { agent, dispatchAgent } = useContext(BskyAgentContext);
   const [post, setPost] = useState<RecordViewDetail | undefined>(undefined);
   const [isFlag, setIsFlag] = useState<boolean>(false);
   const [errTxt, setErrTxt] = useState("");
@@ -74,7 +74,9 @@ export default function TakeModerationAction({
       createLabelVals: [],
       negateLabelVals: [],
       reason: "",
-      createdBy: "did:plc:o5vqybsbwymcjjbeslvq6aho",
+      createdBy: !!agent.agent.hasSession
+        ? agent.agent.session?.did
+        : "did:example:moderator",
     },
   });
 

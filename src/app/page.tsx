@@ -65,7 +65,6 @@ export default function Home() {
             type: "close",
             payload: undefined,
           });
-          console.log(res);
           setReports(res.data.reports);
           if (
             direction != "prev" &&

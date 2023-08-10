@@ -82,7 +82,6 @@ export default function Post({ cid, uri, subjectRepoHandle }: Props) {
           type: "close",
           payload: undefined,
         });
-        console.log(res);
         setPostThread(res.data.thread as ThreadViewPost);
       })
       .catch((err) => {
