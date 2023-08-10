@@ -21,7 +21,7 @@ import { ThreadViewPost } from "@atproto/api/dist/client/types/app/bsky/feed/def
 import { Separator } from "@/components/ui/separator";
 import { View } from "@atproto/api/dist/client/types/app/bsky/embed/images";
 import { DialogImage } from "@/components/functional/dialog-image";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
 
 interface Props {

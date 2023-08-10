@@ -3,8 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { AdminAuthContext } from "@/contexts/admin-auth";
 import { AlertMsgContext } from "@/contexts/alert-msg";
-import { BskyAgentContext } from "@/contexts/bsky-agent";
-import { ComAtprotoServerResetPassword } from "@atproto/api";
+import { AdminBskyAgentContext } from "@/contexts/admin-bsky-agent";
 import {
   useCallback,
   useContext,
@@ -12,6 +11,8 @@ import {
   useReducer,
   useState,
 } from "react";
+import { ActionView } from "@atproto/api/dist/client/types/com/atproto/admin/defs";
+import { ModerationAction } from "@/components/moderation/action";
 
 const PAGINATION_COUNT = 5;
 
@@ -38,18 +39,16 @@ function cursorReducer(
 
 export default function Home() {
   const { data, dispatchData } = useContext(AdminAuthContext);
-  const { agent, dispatchAgent } = useContext(BskyAgentContext);
+  const { adminAgent, dispatchAdminAgent } = useContext(AdminBskyAgentContext);
   const { alert, dispatchAlert } = useContext(AlertMsgContext);
-  //const [reports, setReports] = useState<ReportView[]>([]);
+  const [actions, setActions] = useState<ActionView[]>([]);
   const [cursorArr, dispatchCursorArr] = useReducer(cursorReducer, [undefined]);
   const [cursorArrIndex, setCursorArrIndex] = useState<number>(0);
-  const [openModal, setOpenModal] = useState<boolean>(false);
 
   const getActions = useCallback(
     (encoded: string, direction: PageDirection) => {
       const index = direction == "prev" ? cursorArrIndex - 2 : cursorArrIndex;
-      console.log("index", index);
-      agent.agent.api.com.atproto.admin
+      adminAgent.agent.api.com.atproto.admin
         .getModerationActions(
           {
             limit: PAGINATION_COUNT,
@@ -58,13 +57,11 @@ export default function Home() {
           { headers: { Authorization: `Basic ${encoded}` } }
         )
         .then((res) => {
-          console.log(res);
           dispatchAlert({
             type: "close",
             payload: undefined,
           });
-          console.log(res);
-          // setReports(res.data.reports);
+          setActions(res.data.actions);
           if (
             direction != "prev" &&
             !!res.data.cursor &&
@@ -90,7 +87,7 @@ export default function Home() {
         });
     },
     [
-      agent.agent.api.com.atproto.admin,
+      adminAgent.agent.api.com.atproto.admin,
       cursorArr,
       cursorArrIndex,
       dispatchAlert,
@@ -98,6 +95,7 @@ export default function Home() {
   );
 
   useEffect(() => {
+    if (!data.username || !data.password) return;
     dispatchCursorArr({
       type: "reset",
       payload: "",
@@ -108,11 +106,23 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
+  function updateAction(action: ActionView) {
+    const updateActions = actions.map((item) => {
+      if (item.id == action.id) {
+        return action;
+      }
+      return item;
+    });
+    setActions(updateActions);
+  }
+
   return (
     <div className="flex flex-col">
       <div className="flex flex-col items-center justify-start">
-        {[].map((report, index) => (
-          <div key={index} className="my-2 w-full"></div>
+        {actions.map((action) => (
+          <div key={action.id} className="my-2 w-full">
+            <ModerationAction action={action} updateAction={updateAction} />
+          </div>
         ))}
       </div>
       <div className="flex flex-row flex-nowrap items-center justify-center mt-5">

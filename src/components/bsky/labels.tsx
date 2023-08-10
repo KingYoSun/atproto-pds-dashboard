@@ -4,7 +4,7 @@ import { Label } from "@atproto/api/dist/client/types/com/atproto/label/defs";
 import { Badge } from "@/components/ui/badge";
 
 interface Props {
-  labels: Array<Label>;
+  labels: Array<Label> | Array<string>;
   onClickLabel?: (label: Label) => void;
 }
 
@@ -15,9 +15,11 @@ export default function Labels({ labels, onClickLabel }: Props) {
         <Badge
           key={i}
           className="mx-1"
-          onClick={() => !!onClickLabel && onClickLabel(label)}
+          onClick={() =>
+            !!onClickLabel && typeof label == "object" && onClickLabel(label)
+          }
         >
-          {label.val}
+          {typeof label == "object" ? label.val : label}
         </Badge>
       ))}
     </div>

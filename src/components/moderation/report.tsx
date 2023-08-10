@@ -15,13 +15,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import Post from "../bsky/post";
-import Account from "../bsky/account";
-import { Button } from "../ui/button";
+import Post from "@/components/bsky/post";
+import Account from "@/components/bsky/account";
+import { Button } from "@/components/ui/button";
 import { useContext, useState } from "react";
 import TakeModerationAction from "@/components/functional/takeModerationAction";
 import { AdminAuthContext } from "@/contexts/admin-auth";
-import { AlertMsgContext } from "@/contexts/alert-msg";
 import { AdminBskyAgentContext } from "@/contexts/admin-bsky-agent";
 
 interface Props {
