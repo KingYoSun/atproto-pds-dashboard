@@ -28,6 +28,7 @@ type AgentWithHost = {
   agent: BskyAgent;
   isLogin: boolean;
   session: OutputSchema | AtpSessionData | undefined;
+  open: boolean;
 };
 
 type Payload = {
@@ -36,7 +37,7 @@ type Payload = {
 };
 
 type Action = {
-  type: "set" | "logout" | "login" | "session";
+  type: "set" | "session" | "open" | "close";
   payload: Payload;
 };
 
@@ -48,27 +49,31 @@ function reducer(state: AgentWithHost, action: Action): AgentWithHost {
         agent: setBskyAgent(action?.payload.host),
         isLogin: false,
         session: state.session,
-      };
-    case "logout":
-      return {
-        host: state.host,
-        agent: state.agent,
-        isLogin: false,
-        session: state.session,
-      };
-    case "login":
-      return {
-        host: state.host,
-        agent: state.agent,
-        isLogin: true,
-        session: state.session,
+        open: state.open,
       };
     case "session":
       return {
         host: state.host,
         agent: state.agent,
-        isLogin: false,
+        isLogin: !!action?.payload.session,
         session: action?.payload.session,
+        open: !!!action?.payload.session,
+      };
+    case "open":
+      return {
+        host: state.host,
+        agent: state.agent,
+        isLogin: state.isLogin,
+        session: action?.payload.session,
+        open: true,
+      };
+    case "close":
+      return {
+        host: state.host,
+        agent: state.agent,
+        isLogin: state.isLogin,
+        session: action?.payload.session,
+        open: false,
       };
     default:
       throw state;
@@ -84,6 +89,7 @@ export default function BskyAgentContextProvider({
     agent: setBskyAgent(url),
     isLogin: false,
     session: undefined,
+    open: false,
   };
   const [agent, dispatchAgent] = useReducer(reducer, initialState);
 

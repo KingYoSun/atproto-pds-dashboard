@@ -30,7 +30,6 @@ const formSchema = z.object({
 
 export default function PlcAuthModal() {
   const { agent, dispatchAgent } = useContext(BskyAgentContext);
-  const [dialogOpen, setDialogOpen] = useState(false);
   const [errTxt, setErrTxt] = useState("");
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -49,7 +48,6 @@ export default function PlcAuthModal() {
       })
       .then((res) => {
         setErrTxt("");
-        setDialogOpen(!res.success);
         setPlcAuth({
           host: agent.host ?? "",
           sessionData: res.data,
@@ -67,7 +65,7 @@ export default function PlcAuthModal() {
   useEffect(() => {
     if (!agent.isLogin && !!agent.host) {
       const sessionExist = getPlcAuth(agent.host);
-      if (sessionExist) {
+      if (sessionExist && !agent.open) {
         agent.agent
           .resumeSession(sessionExist)
           .then((res) => {
@@ -85,7 +83,7 @@ export default function PlcAuthModal() {
           });
       }
     }
-    if (agent.isLogin) {
+    if (agent.open) {
       if (agent.agent.hasSession) {
         agent.agent.api.com.atproto.server
           .deleteSession()
@@ -96,12 +94,16 @@ export default function PlcAuthModal() {
             setErrTxt(err);
           });
       }
-      setDialogOpen(true);
+      revokePlcAuth(agent.host as string);
+      dispatchAgent({
+        type: "open",
+        payload: {},
+      });
     }
   }, [
     agent.agent,
     agent.agent.api.com.atproto.server,
-    agent.agent.hasSession,
+    agent.open,
     agent.host,
     agent.isLogin,
     dispatchAgent,
@@ -109,9 +111,12 @@ export default function PlcAuthModal() {
 
   return (
     <Dialog
-      open={dialogOpen}
+      open={agent?.open}
       onOpenChange={(flg) => {
-        setDialogOpen(flg);
+        dispatchAgent({
+          type: flg ? "open" : "close",
+          payload: {},
+        });
       }}
     >
       <DialogContent>

@@ -33,8 +33,8 @@ const Drawer = React.forwardRef<HTMLDivElement, DrawerPorps>(
 
     function resetPlcAuth() {
       dispatchAgent({
-        type: "login",
-        payload: {},
+        type: "session",
+        payload: { session: undefined },
       });
     }
 
@@ -57,7 +57,7 @@ const Drawer = React.forwardRef<HTMLDivElement, DrawerPorps>(
             onClick={resetPlcAuth}
             className="text-xs"
           >
-            PLC {!!agent.session ? "Logout" : "Login"}
+            PLC {agent.isLogin ? "Logout" : "Login"}
           </Button>
           <Button
             variant="outline"
