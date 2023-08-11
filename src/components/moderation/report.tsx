@@ -15,10 +15,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import Post from "@/components/bsky/post";
+import Post, { PostHandles } from "@/components/bsky/post";
 import Account from "@/components/bsky/account";
 import { Button } from "@/components/ui/button";
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import TakeModerationAction from "@/components/functional/takeModerationAction";
 import { AdminAuthContext } from "@/contexts/admin-auth";
 import { AdminBskyAgentContext } from "@/contexts/admin-bsky-agent";
@@ -33,6 +33,7 @@ export default function ModerationReport({ report, updateReport }: Props) {
   const { adminAgent, dispatchAdminAgent } = useContext(AdminBskyAgentContext);
   const [modReport, setModReport] = useState<ReportView | undefined>(undefined);
   const [openActionModal, setOpenActionModal] = useState<boolean>(false);
+  const PostRef = useRef<PostHandles>(null);
 
   function takeModerationAction(props: InputSchema) {
     const encoded = btoa(`${data.username}:${data.password}`);
@@ -43,6 +44,7 @@ export default function ModerationReport({ report, updateReport }: Props) {
       })
       .then((res) => {
         updateReport(res.data);
+        PostRef?.current?.reloadPost();
         setOpenActionModal(false);
       })
       .catch((res) => {
@@ -83,6 +85,7 @@ export default function ModerationReport({ report, updateReport }: Props) {
             )}
             {report.subject.$type == "com.atproto.repo.strongRef" && (
               <Post
+                ref={PostRef}
                 cid={report.subject.cid as string}
                 uri={report.subject.uri as string}
                 subjectRepoHandle={report.subjectRepoHandle}

@@ -5,7 +5,14 @@ import { AlertMsgContext } from "@/contexts/alert-msg";
 import { BskyAgentContext } from "@/contexts/bsky-agent";
 import { AdminBskyAgentContext } from "@/contexts/admin-bsky-agent";
 import { RecordViewDetail } from "@atproto/api/dist/client/types/com/atproto/admin/defs";
-import { useContext, useEffect, useState } from "react";
+import {
+  forwardRef,
+  useCallback,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from "react";
 import { Record } from "@atproto/api/dist/client/types/app/bsky/feed/post";
 import dayjs from "dayjs";
 import {
@@ -30,125 +37,136 @@ interface Props {
   subjectRepoHandle?: string;
 }
 
-export default function Post({ cid, uri, subjectRepoHandle }: Props) {
-  const { data, dispatchData } = useContext(AdminAuthContext);
-  const { agent, dispatchAgent } = useContext(BskyAgentContext);
-  const { adminAgent, dispatchAdminAgent } = useContext(AdminBskyAgentContext);
-  const { alert, dispatchAlert } = useContext(AlertMsgContext);
-  const [post, setPost] = useState<RecordViewDetail | undefined>(undefined);
-  const [postThread, setPostThread] = useState<ThreadViewPost | undefined>(
-    undefined
-  );
+export interface PostHandles {
+  reloadPost(): void;
+}
 
-  function getRecordByAdmin() {
-    if (!uri || !cid) return;
-    const encoded = btoa(`${data.username}:${data.password}`);
-    adminAgent.agent.api.com.atproto.admin
-      .getRecord(
-        {
-          uri: uri,
-          cid: cid,
-        },
-        { headers: { Authorization: `Basic ${encoded}` } }
-      )
-      .then((res) => {
-        dispatchAlert({
-          type: "close",
-          payload: undefined,
-        });
-        setPost(res.data);
-      })
-      .catch((res) => {
-        dispatchAlert({
-          type: "set",
-          payload: {
-            variant: "destructive",
-            title: "getRecord by Admin Failed!",
-            message: JSON.stringify(res),
-            open: true,
+const Post = forwardRef<PostHandles, Props>(
+  ({ cid, uri, subjectRepoHandle }, ref) => {
+    const { data, dispatchData } = useContext(AdminAuthContext);
+    const { agent, dispatchAgent } = useContext(BskyAgentContext);
+    const { adminAgent, dispatchAdminAgent } = useContext(
+      AdminBskyAgentContext
+    );
+    const { alert, dispatchAlert } = useContext(AlertMsgContext);
+    const [postDetail, setPostDetail] = useState<RecordViewDetail | undefined>(
+      undefined
+    );
+    const [postThread, setPostThread] = useState<ThreadViewPost | undefined>(
+      undefined
+    );
+
+    function getRecordByAdmin() {
+      if (!uri || !cid) return;
+      const encoded = btoa(`${data.username}:${data.password}`);
+      adminAgent.agent.api.com.atproto.admin
+        .getRecord(
+          {
+            uri: uri,
+            cid: cid,
           },
+          { headers: { Authorization: `Basic ${encoded}` } }
+        )
+        .then((res) => {
+          dispatchAlert({
+            type: "close",
+            payload: undefined,
+          });
+          setPostDetail(res.data);
+        })
+        .catch((res) => {
+          dispatchAlert({
+            type: "set",
+            payload: {
+              variant: "destructive",
+              title: "getRecord by Admin Failed!",
+              message: JSON.stringify(res),
+              open: true,
+            },
+          });
         });
-      });
-  }
-
-  function getPost() {
-    if (!uri) return;
-    agent.agent
-      .getPostThread({
-        uri,
-      })
-      .then((res) => {
-        dispatchAlert({
-          type: "close",
-          payload: undefined,
-        });
-        setPostThread(res.data.thread as ThreadViewPost);
-      })
-      .catch((err) => {
-        dispatchAlert({
-          type: "set",
-          payload: {
-            variant: "destructive",
-            title: "getPostThread Failed!",
-            message: JSON.stringify(err),
-            open: true,
-          },
-        });
-      });
-  }
-
-  useEffect(() => {
-    if (agent.agent.hasSession) {
-      getPost();
-    } else if (!!uri && !!cid) {
-      getRecordByAdmin();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [agent.agent.hasSession]);
 
-  function parseRecord(record: {} | undefined) {
-    if (!record) return undefined;
-    const asserted = record as Record;
-    return asserted;
-  }
+    function getPost() {
+      if (!uri) return;
+      agent.agent
+        .getPostThread({
+          uri,
+        })
+        .then((res) => {
+          dispatchAlert({
+            type: "close",
+            payload: undefined,
+          });
+          setPostThread(res.data.thread as ThreadViewPost);
+        })
+        .catch((err) => {
+          dispatchAlert({
+            type: "set",
+            payload: {
+              variant: "destructive",
+              title: "getPostThread Failed!",
+              message: JSON.stringify(err),
+              open: true,
+            },
+          });
+        });
+    }
 
-  function parseEmbedImage(embed: {} | undefined) {
-    if (!embed) return undefined;
-    const asserted = embed as View;
-    return asserted;
-  }
+    useImperativeHandle(ref, () => ({
+      reloadPost: () => {
+        if (agent.agent.hasSession) {
+          getPost();
+        }
+        getRecordByAdmin();
+      },
+    }));
 
-  return (
-    <Card>
-      {!!post && !postThread && (
+    useEffect(() => {
+      if (agent.agent.hasSession) {
+        getPost();
+      }
+      getRecordByAdmin();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [agent.agent.hasSession]);
+
+    function parseRecord(record: {} | undefined) {
+      if (!record) return undefined;
+      const asserted = record as Record;
+      return asserted;
+    }
+
+    function parseEmbedImage(embed: {} | undefined) {
+      if (!embed) return undefined;
+      const asserted = embed as View;
+      return asserted;
+    }
+
+    return (
+      <Card>
         <div>
           <CardHeader>
             <CardDescriptionDiv className="flex flex-row items-start">
-              <Account did={post.repo.did} />
-              {dayjs(parseRecord(post.value)?.createdAt).format(
-                "YYYY-MM-DD HH:mm:ss Z"
+              {postDetail && (
+                <Account
+                  did={postThread?.post.author.did ?? postDetail?.repo.did}
+                  author={postThread?.post.author}
+                />
               )}
-            </CardDescriptionDiv>
-            <CardDescriptionDiv>
-              Labels: {!!post.labels && <Labels labels={post.labels} />}
-            </CardDescriptionDiv>
-          </CardHeader>
-          <CardContent>{parseRecord(post.value)?.text}</CardContent>
-        </div>
-      )}
-      {!!postThread && (
-        <div>
-          <CardHeader>
-            <CardDescriptionDiv className="flex flex-row items-start">
-              <Account
-                did={postThread.post.author.did}
-                author={postThread.post.author}
-              />
-              {dayjs(postThread.post.indexedAt).format("YYYY-MM-DD HH:mm:ss Z")}
+              {!!postThread
+                ? dayjs(postThread?.post.indexedAt).format(
+                    "YYYY-MM-DD HH:mm:ss Z"
+                  )
+                : dayjs(parseRecord(postDetail?.value)?.createdAt).format(
+                    "YYYY-MM-DD HH:mm:ss Z"
+                  )}
               <Button
                 variant="outline"
                 size="icon"
-                onClick={getPost}
+                onClick={() => {
+                  getPost();
+                  getRecordByAdmin();
+                }}
                 className="mx-2"
               >
                 <RefreshCw />
@@ -156,15 +174,17 @@ export default function Post({ cid, uri, subjectRepoHandle }: Props) {
             </CardDescriptionDiv>
             <CardDescriptionDiv>
               Labels:{" "}
-              {!!postThread.post.labels && (
-                <Labels labels={postThread.post.labels} />
-              )}
+              {!!postDetail?.labels && <Labels labels={postDetail.labels} />}
             </CardDescriptionDiv>
           </CardHeader>
           <Separator className="mb-3" />
           <CardContent className="flex flex-col">
-            <p>{parseRecord(postThread.post.record)?.text}</p>
-            {!!postThread.post.embed &&
+            <p>
+              {!!postThread
+                ? parseRecord(postThread.post.record)?.text
+                : parseRecord(postDetail?.value)?.text}
+            </p>
+            {!!postThread?.post.embed &&
               postThread.post.embed.$type == "app.bsky.embed.images#view" && (
                 <div
                   className={
@@ -184,12 +204,21 @@ export default function Post({ cid, uri, subjectRepoHandle }: Props) {
           </CardContent>
           <Separator className="mb-2" />
           <CardFooter>
-            {postThread.post.replyCount ?? 0} replies{" "}
-            {postThread.post.repostCount ?? 0} repost{" "}
-            {postThread.post.likeCount ?? 0} likes
+            {postThread?.post.replyCount ?? 0} replies{", "}
+            {postThread?.post.repostCount ?? 0} repost{", "}
+            {postThread?.post.likeCount ?? 0} likes{", "}
+            {postDetail?.moderation.reports.length ?? 0} reports{", "}
+            {postDetail?.moderation.actions.length ?? 0} actions{", "}
+            currentActionId: {postDetail?.moderation.currentAction?.id}
+            {", "}
+            currentAction: {postDetail?.moderation.currentAction?.action}
           </CardFooter>
         </div>
-      )}
-    </Card>
-  );
-}
+      </Card>
+    );
+  }
+);
+
+Post.displayName == "Post";
+
+export default Post;

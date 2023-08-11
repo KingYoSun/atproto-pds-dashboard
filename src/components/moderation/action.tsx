@@ -12,12 +12,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Account from "@/components/bsky/account";
-import Post from "@/components/bsky/post";
+import Post, { PostHandles } from "@/components/bsky/post";
 import { Button } from "@/components/ui/button";
 import Labels from "@/components/bsky/labels";
 import { AdminAuthContext } from "@/contexts/admin-auth";
 import { AdminBskyAgentContext } from "@/contexts/admin-bsky-agent";
-import { useContext, useEffect, useState, useCallback } from "react";
+import { useContext, useEffect, useState, useCallback, useRef } from "react";
 import { BskyAgentContext } from "@/contexts/bsky-agent";
 import { OutputSchema } from "@atproto/api/dist/client/types/com/atproto/admin/getRecord";
 
@@ -33,6 +33,7 @@ export function ModerationAction({ action, updateAction }: Props) {
   const [postDetail, setPostDetail] = useState<OutputSchema | undefined>(
     undefined
   );
+  const PostRef = useRef<PostHandles>(null);
 
   const getRecordByAdmin = useCallback(
     (action: ActionView) => {
@@ -161,6 +162,7 @@ export function ModerationAction({ action, updateAction }: Props) {
             )}
             {action.subject.$type == "com.atproto.repo.strongRef" && (
               <Post
+                ref={PostRef}
                 cid={action.subject.cid as string}
                 uri={action.subject.uri as string}
               />
