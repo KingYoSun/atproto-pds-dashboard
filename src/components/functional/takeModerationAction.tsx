@@ -81,7 +81,6 @@ export default function TakeModerationAction({
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    const encoded = btoa(`${data.username}:${data.password}`);
     let subject;
     switch (values.subjectType) {
       case "com.atproto.admin.defs#repoRef":
@@ -173,7 +172,7 @@ export default function TakeModerationAction({
               className="bg-red-100 border border-red-400 text-red-700 px-2 py-3 rounded relative"
               role="alert"
             >
-              <strong className="font-bold">Authorization Failed!</strong>
+              <strong className="font-bold">Failed!</strong>
               <span className="block sm:inline">{errTxt}</span>
             </div>
           )}
@@ -332,6 +331,7 @@ export default function TakeModerationAction({
                   />
                 </div>
               )}
+              <FormMessage />
               <Button type="submit" className="my-4">
                 Submit
               </Button>

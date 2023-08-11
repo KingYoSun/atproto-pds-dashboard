@@ -78,6 +78,9 @@ export default function ModerationReport({ report, updateReport }: Props) {
               created_at:{" "}
               {dayjs(report.createdAt).format("YYYY-MM-DD HH:mm:ss Z")}
             </CardDescription>
+            <CardDescriptionDiv>
+              resolvedByAction: {report.resolvedByActionIds.join(", ")}
+            </CardDescriptionDiv>
           </CardHeader>
           <CardContent>
             {report.subject.$type == "com.atproto.admin.defs#repoRef" && (

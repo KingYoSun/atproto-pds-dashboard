@@ -20,6 +20,8 @@ import { AdminBskyAgentContext } from "@/contexts/admin-bsky-agent";
 import { useContext, useEffect, useState, useCallback, useRef } from "react";
 import { BskyAgentContext } from "@/contexts/bsky-agent";
 import { OutputSchema } from "@atproto/api/dist/client/types/com/atproto/admin/getRecord";
+import ResolveModerationReports from "../functional/resolveModerationReports";
+import { InputSchema as InputSchemaResolveModerationReports } from "@atproto/api/dist/client/types/com/atproto/admin/resolveModerationReports";
 
 interface Props {
   action: ActionView;
@@ -34,6 +36,7 @@ export function ModerationAction({ action, updateAction }: Props) {
     undefined
   );
   const PostRef = useRef<PostHandles>(null);
+  const [openResolve, setOpenResolve] = useState(false);
 
   const getRecordByAdmin = useCallback(
     (action: ActionView) => {
@@ -63,28 +66,24 @@ export function ModerationAction({ action, updateAction }: Props) {
     [adminAgent.agent.api.com.atproto.admin, data.password, data.username]
   );
 
-  function resolveModerationReports(action: ActionView) {
+  function resolveModerationReports(
+    input: InputSchemaResolveModerationReports
+  ) {
     if (!data.password || !data.username) {
       alert("Admin Auth Required!");
       return;
     }
     const encoded = btoa(`${data.username}:${data.password}`);
     adminAgent.agent.api.com.atproto.admin
-      .resolveModerationReports(
-        {
-          actionId: action.id,
-          reportIds:
-            postDetail?.moderation.reports.map((item) => item.id) ?? [],
-          createdBy: agent.agent.session?.did ?? "did:example:admin",
-        },
-        {
-          headers: { Authorization: `Basic ${encoded}` },
-          encoding: "application/json",
-        }
-      )
+      .resolveModerationReports(input, {
+        headers: { Authorization: `Basic ${encoded}` },
+        encoding: "application/json",
+      })
       .then((res) => {
         if (!res.success) alert("resolveModerationReports failed!");
         alert("Done!");
+        setOpenResolve(false);
+        updateAction(res.data);
       })
       .catch((err) => {
         alert(err);
@@ -155,6 +154,9 @@ export function ModerationAction({ action, updateAction }: Props) {
             <CardDescription>
               relatedReports: {postDetail?.moderation.reports.length}
             </CardDescription>
+            <CardDescriptionDiv>
+              resolvedReportIds: {action.resolvedReportIds.join(", ")}
+            </CardDescriptionDiv>
           </CardHeader>
           <CardContent>
             {action.subject.$type == "com.atproto.admin.defs#repoRef" && (
@@ -170,7 +172,11 @@ export function ModerationAction({ action, updateAction }: Props) {
           </CardContent>
           <CardFooter>
             <div className="flex flex-row">
-              <Button variant="secondary" onClick={() => {}} className="mx-1">
+              <Button
+                variant="secondary"
+                onClick={() => setOpenResolve(true)}
+                className="mx-1"
+              >
                 resolveModerationReports
               </Button>
               <Button variant="secondary" onClick={() => {}} className="mx-1">
@@ -179,6 +185,15 @@ export function ModerationAction({ action, updateAction }: Props) {
             </div>
           </CardFooter>
         </Card>
+        {!!action && !!postDetail && (
+          <ResolveModerationReports
+            action={action}
+            postDetail={postDetail}
+            resolveModerationReportsFunc={resolveModerationReports}
+            closeModalFunc={() => setOpenResolve(false)}
+            open={openResolve}
+          />
+        )}
       </>
     )
   );
