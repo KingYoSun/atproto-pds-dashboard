@@ -3,7 +3,9 @@
 ## Contents
 
 - [Overview](#overview)
+- [Usage](#usage)
 - [Features](#features)
+- [Demo](#demo)
 
 ## Overview
 
