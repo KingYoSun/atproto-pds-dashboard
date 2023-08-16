@@ -67,7 +67,7 @@ export default function ResolveModerationReports({
   }
 
   return (
-    <Dialog open={open} onOpenChange={(flg) => !flg && closeModalFunc}>
+    <Dialog open={open} onOpenChange={(flg) => !flg && closeModalFunc()}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>ResolveModerationReports</DialogTitle>
