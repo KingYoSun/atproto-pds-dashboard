@@ -20,8 +20,11 @@ import { AdminBskyAgentContext } from "@/contexts/admin-bsky-agent";
 import { useContext, useEffect, useState, useCallback, useRef } from "react";
 import { BskyAgentContext } from "@/contexts/bsky-agent";
 import { OutputSchema } from "@atproto/api/dist/client/types/com/atproto/admin/getRecord";
-import ResolveModerationReports from "../functional/resolveModerationReports";
+import ResolveModerationReports from "@/components/functional/resolveModerationReports";
 import { InputSchema as InputSchemaResolveModerationReports } from "@atproto/api/dist/client/types/com/atproto/admin/resolveModerationReports";
+import ReverseModerationAction from "@/components/functional/reverseModerationAction";
+import { InputSchema as InputSchemaReverseModerationAction } from "@atproto/api/dist/client/types/com/atproto/admin/reverseModerationAction";
+import { Badge } from "@/components/ui/badge";
 
 interface Props {
   action: ActionView;
@@ -37,6 +40,7 @@ export function ModerationAction({ action, updateAction }: Props) {
   );
   const PostRef = useRef<PostHandles>(null);
   const [openResolve, setOpenResolve] = useState(false);
+  const [openReverse, setOpenReverse] = useState(false);
 
   const getRecordByAdmin = useCallback(
     (action: ActionView) => {
@@ -90,21 +94,22 @@ export function ModerationAction({ action, updateAction }: Props) {
       });
   }
 
-  function reverseModerationAction(action: ActionView) {
+  function reverseModerationAction(input: InputSchemaReverseModerationAction) {
     if (!data.password || !data.username) {
       alert("Admin Auth Required!");
       return;
     }
     const encoded = btoa(`${data.username}:${data.password}`);
     adminAgent.agent.api.com.atproto.admin
-      .reverseModerationAction({
-        id: action.id,
-        reason: "",
-        createdBy: agent.agent.session?.did ?? "did:example:admin",
+      .reverseModerationAction(input, {
+        headers: { Authorization: `Basic ${encoded}` },
+        encoding: "application/json",
       })
       .then((res) => {
         if (!res.success) alert("resolveModerationReports failed!");
         alert("Done!");
+        setOpenReverse(false);
+        updateAction(res.data);
       })
       .catch((err) => {
         alert(err);
@@ -120,7 +125,14 @@ export function ModerationAction({ action, updateAction }: Props) {
       <>
         <Card className="w-full">
           <CardHeader>
-            <CardTitle>{action.action}</CardTitle>
+            <div className="flex flex-row items-center">
+              <CardTitle>{action.action}</CardTitle>
+              {!!action.reversal && (
+                <Badge variant="destructive" className="mx-1">
+                  Reversed
+                </Badge>
+              )}
+            </div>
             <CardDescription>id: {action.id}</CardDescription>
             <CardDescriptionDiv className="flex flex-row items-center">
               Created by:
@@ -147,9 +159,6 @@ export function ModerationAction({ action, updateAction }: Props) {
               ) : (
                 ""
               )}
-            </CardDescriptionDiv>
-            <CardDescriptionDiv>
-              reversal?: {!!action.reversal ? "true" : "false"}
             </CardDescriptionDiv>
             <CardDescription>
               relatedReports: {postDetail?.moderation.reports.length}
@@ -179,7 +188,11 @@ export function ModerationAction({ action, updateAction }: Props) {
               >
                 resolveModerationReports
               </Button>
-              <Button variant="secondary" onClick={() => {}} className="mx-1">
+              <Button
+                variant="secondary"
+                onClick={() => setOpenReverse(true)}
+                className="mx-1"
+              >
                 reverseModerationAction
               </Button>
             </div>
@@ -192,6 +205,14 @@ export function ModerationAction({ action, updateAction }: Props) {
             resolveModerationReportsFunc={resolveModerationReports}
             closeModalFunc={() => setOpenResolve(false)}
             open={openResolve}
+          />
+        )}
+        {!!action && (
+          <ReverseModerationAction
+            action={action}
+            reverseModerationActionFunc={reverseModerationAction}
+            closeModalFunc={() => setOpenReverse(false)}
+            open={openReverse}
           />
         )}
       </>
