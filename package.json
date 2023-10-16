@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@atproto/api": "^0.6.16",
+    "@atproto/api": "^0.6.20",
     "@hookform/resolvers": "^3.3.1",
     "@radix-ui/react-avatar": "^1.0.3",
     "@radix-ui/react-checkbox": "^1.0.4",

@@ -12,53 +12,53 @@
   resolved "https://registry.yarnpkg.com/@alloc/quick-lru/-/quick-lru-5.2.0.tgz#7bf68b20c0a350f936915fcae06f58e32007ce30"
   integrity sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==
 
-"@atproto/api@^0.6.16":
-  version "0.6.16"
-  resolved "https://registry.yarnpkg.com/@atproto/api/-/api-0.6.16.tgz#0e5f259a8eb8af239b4e77bf70d7e770b33f4eeb"
-  integrity sha512-DpG994bdwk7NWJSb36Af+0+FRWMFZgzTcrK0rN2tvlsMh6wBF/RdErjHKuoL8wcogGzbI2yp8eOqsA00lyoisw==
+"@atproto/api@^0.6.20":
+  version "0.6.20"
+  resolved "https://registry.yarnpkg.com/@atproto/api/-/api-0.6.20.tgz#3a7eda60d73a5d5b6938e2dd016c24a7ba180c83"
+  integrity sha512-+peoKgkaxbglXQg9qEZcZIvyWm39yj0+syV3TBDrz5cWK4OIsdOyYBg2iISy+jvB5RzEUMe2WvOojP6Nq34mOg==
   dependencies:
-    "@atproto/common-web" "^0.2.0"
-    "@atproto/lexicon" "^0.2.1"
-    "@atproto/syntax" "^0.1.1"
-    "@atproto/xrpc" "^0.3.1"
+    "@atproto/common-web" "^0.2.1"
+    "@atproto/lexicon" "^0.2.2"
+    "@atproto/syntax" "^0.1.2"
+    "@atproto/xrpc" "^0.3.2"
     multiformats "^9.9.0"
     tlds "^1.234.0"
     typed-emitter "^2.1.0"
 
-"@atproto/common-web@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@atproto/common-web/-/common-web-0.2.0.tgz#8420da28e89dac64ad2a11b6ff10a4023c67151f"
-  integrity sha512-ugKrT8CWf6PDsZ29VOhOCs5K4z9BAFIV7SxPXA+MHC7pINqQ+wyjIq+DtUI8kmUSce1dTqc/lMN1akf/W5whVQ==
+"@atproto/common-web@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@atproto/common-web/-/common-web-0.2.1.tgz#97412cb241321fc6c56a2b8c0b2416b3240caf50"
+  integrity sha512-5AoDKkKz7JhXSiicjhPihA/MJMlSuTQ9Aed9fflPuoTuT6C3aXbxaUZEcqqipSwlCfGpOzPmJmWJjMWWsYr2ew==
   dependencies:
     graphemer "^1.4.0"
-    multiformats "^9.6.4"
+    multiformats "^9.9.0"
     uint8arrays "3.0.0"
     zod "^3.21.4"
 
-"@atproto/lexicon@^0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@atproto/lexicon/-/lexicon-0.2.1.tgz#1aa6e618ce0977d972ac98f1bfb493a904b6d53a"
-  integrity sha512-r03gJ9g/hhfI4zHqQgS8HrWceXMhpkVSPNJw1DufpwGpISdaqO6WltdxUkdUQXl6htJmZq3QidnyWPXR5dOtWg==
+"@atproto/lexicon@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@atproto/lexicon/-/lexicon-0.2.2.tgz#938a39482ff41c6a908f4ad43274adba595f3643"
+  integrity sha512-CvmjaSDavHMOJTuNYE8VjYhL7TVxBYV8QSWh2jHCpzfmj02DvVD9UBIfnoVv67POJkEtWXddjoV9beaIbaq/Xg==
   dependencies:
-    "@atproto/common-web" "^0.2.0"
-    "@atproto/syntax" "^0.1.1"
+    "@atproto/common-web" "^0.2.1"
+    "@atproto/syntax" "^0.1.2"
     iso-datestring-validator "^2.2.2"
     multiformats "^9.9.0"
     zod "^3.21.4"
 
-"@atproto/syntax@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@atproto/syntax/-/syntax-0.1.1.tgz#2f458dea27418e4e59425c755a4b89b96974965b"
-  integrity sha512-R3ZbDcA1Ax9yu81uReRcrsmCknqBjqTI+3zuNYS8gNEh0m0OUqJyR4+xSDwrSjE4NDOs1nT93HP+WrimENkihg==
+"@atproto/syntax@^0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@atproto/syntax/-/syntax-0.1.2.tgz#417366d36b53ecf29d9d1f6e35179b1f3feef95b"
+  integrity sha512-n6VSuccMGouwftCvZBq9WNwI0qYCMOH/lTHSV+/dT232lX7pIrqisOlErUSBoOJ49B1Wxy1DjeeBS26ap9SsGQ==
   dependencies:
-    "@atproto/common-web" "^0.2.0"
+    "@atproto/common-web" "^0.2.1"
 
-"@atproto/xrpc@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@atproto/xrpc/-/xrpc-0.3.1.tgz#a1d69450df2d53437db5a085f7adc27e128f9b33"
-  integrity sha512-VVoRC/omtXFMIDUyrkFjYkwJ3vevvsGH0L1UW6mTsL40DK3iJpi0GcdJlcqdMkIFJ+QLeAluEKgEcL7bAR5LiQ==
+"@atproto/xrpc@^0.3.2":
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/@atproto/xrpc/-/xrpc-0.3.2.tgz#432a364be4b3bf8660a088a07dadecac10209763"
+  integrity sha512-D9jGjcFnEMHuGQ56v6+78uX3RiytKLrA5ITLq6shy0Qj6Zvt5MqV+/cTFuNPKrNCrnWOtHFeRQwMqyGhNS9qZQ==
   dependencies:
-    "@atproto/lexicon" "^0.2.1"
+    "@atproto/lexicon" "^0.2.2"
     zod "^3.21.4"
 
 "@babel/runtime@^7.13.10", "@babel/runtime@^7.20.7":
@@ -2213,7 +2213,7 @@ ms@^2.1.1:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.3.tgz#574c8138ce1d2b5861f0b44579dbadd60c6615b2"
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
 
-multiformats@^9.4.2, multiformats@^9.6.4, multiformats@^9.9.0:
+multiformats@^9.4.2, multiformats@^9.9.0:
   version "9.9.0"
   resolved "https://registry.yarnpkg.com/multiformats/-/multiformats-9.9.0.tgz#c68354e7d21037a8f1f8833c8ccd68618e8f1d37"
   integrity sha512-HoMUjhH9T8DDBNT+6xzkrd9ga/XiBI4xLr58LJACwK6G3HTOPeMz4nB4KJs33L2BelrIJa7P0VuNaVF3hMYfjg==
