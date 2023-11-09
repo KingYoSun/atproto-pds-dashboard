@@ -28,7 +28,7 @@
     "clsx": "^2.0.0",
     "dayjs": "^1.11.9",
     "eslint": "8.53.0",
-    "eslint-config-next": "13.4.19",
+    "eslint-config-next": "14.0.1",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.292.0",
     "next": "13.5.4",
