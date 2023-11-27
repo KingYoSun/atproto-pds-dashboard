@@ -43,6 +43,6 @@
     "zod": "^3.22.3"
   },
   "devDependencies": {
-    "@types/js-cookie": "^3.0.4"
+    "@types/js-cookie": "^3.0.6"
   }
 }
