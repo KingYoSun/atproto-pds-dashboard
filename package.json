@@ -27,7 +27,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "dayjs": "^1.11.10",
-    "eslint": "8.53.0",
+    "eslint": "8.55.0",
     "eslint-config-next": "14.0.3",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.293.0",
