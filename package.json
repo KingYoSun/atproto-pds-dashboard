@@ -40,7 +40,7 @@
     "tailwindcss": "3.4.3",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "5.3.3",
-    "zod": "^3.23.0"
+    "zod": "^3.23.4"
   },
   "devDependencies": {
     "@types/js-cookie": "^3.0.6"
